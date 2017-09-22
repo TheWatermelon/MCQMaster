@@ -1,6 +1,8 @@
 # MCQMaster
 A tool written in Python to work with MCQs
 
+Created in Python 3.6.2
+
 # Usage
 MCQMaster \<options\>
 
