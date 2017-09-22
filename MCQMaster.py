@@ -67,19 +67,35 @@ class MCQCreator:
         test_name = input("Test name : ")
         root.attrib['name'] = test_name
 
-        mcq_number = input("Number of MCQs : ")
+        mcq_number = 0
+        while True:
+            try:
+                mcq_number = int(input("Number of MCQs : "))
+            except ValueError:
+                print("Enter an integer !")
+                continue
+            else:
+                break
 
-        for mcq_i in range(int(mcq_number)):
-            print("MCQ [" + str(mcq_i+1) + "/" + mcq_number + "]")
+        for mcq_i in range(mcq_number):
+            print("MCQ [" + str(mcq_i+1) + "/" + str(mcq_number) + "]")
 
             mcq = ET.SubElement(root, 'mcq')
             mcq_name = input("MCQ name : ")
             mcq.attrib['name'] = mcq_name
 
-            question_number = input("Number of questions : ")
+            question_number = 0
+            while True:
+                try:
+                    question_number = int(input("Number of questions : "))
+                except ValueError:
+                    print("Enter an integer !")
+                    continue
+                else:
+                    break
 
-            for question_i in range(int(question_number)):
-                print("Question [" + str(question_i+1) + "/" + question_number + "]")
+            for question_i in range(question_number):
+                print("Question [" + str(question_i+1) + "/" + str(question_number) + "]")
 
                 question = ET.SubElement(mcq, 'question')
                 question_name = input("Question name : ")
