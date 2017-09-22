@@ -8,6 +8,6 @@ MCQMaster \<options\>
 
 Options :
 
-  -f \<xml file\> : load an XML-formatted MCQ stored in file and start the MCQ evaluation
+  -f \<xml file\> : load an XML-formatted MCQ and start the MCQ evaluation
   
-  -c \<xml file\> : create an MCQ and write it to file
+  -c \<xml file\> : create an MCQ and write it to a file
