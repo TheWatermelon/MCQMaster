@@ -6,6 +6,6 @@ MCQMaster \<options\>
 
 Options :
 
-  -f <xml file> : load an XML-formatted MCQ stored in file
+  -f \<xml file\> : load an XML-formatted MCQ stored in file
   
-  -c <xml file> : create an MCQ and write it to file
+  -c \<xml file\> : create an MCQ and write it to file
