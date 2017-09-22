@@ -1,63 +1,110 @@
 import getopt
 import sys
-
-class MCQToken:
-    TYPE_MCQ_TITLE = 0
-    TYPE_QNAME = 1
-    TYPE_QANSWER = 2
-    TYPE_EOF = -1
-
-    def __init__(self, type_token, representation):
-        self.type = type_token
-        self.representation = representation
-
-    def print(self):
-        print('[' + str(self.type) + ': ' + self.representation + ']')
-
-
-class MCQLexer:
-    def __init__(self, filename):
-        self.inputfile = open(filename, encoding="utf8")
-        self.line = self.inputfile.readline(1000000)
-        self.position = 0
-
-    def step(self) -> bool:
-        if self.line == '':
-            return False
-        if self.position == len(self.line):
-            self.line = self.inputfile.readline(1000000)
-            if self.line == '':
-                return False
-            self.position = 0
-            self.step()
-        c = self.line[self.position]
-        # passer les espaces
-        if not (c == ' ' or c == '\t' or c == '\r' or c == '\n'):
-            return True
-        self.position += 1
-        return self.step()
-
-    def next(self) -> MCQToken:
-        if not (self.step()):
-            return MCQToken(MCQToken.TYPE_EOF, "")
-        c = self.line[self.position]
-
-
-    def estBaliseOuvrante(self, jeton) -> bool:
-        return jeton.type == Jeton.TYPE_BALISE_OUVRANTE
-
+import math
+import xml.etree.ElementTree as ET
+import xml.dom.minidom as minidom
 
 
 class MCQMaster:
     def __init__(self, file):
-        f = open(file)
-        print(f.readlines())
+        self.tree = ET.parse(file)
+
+    def beautify(self, string):
+        line = ""
+        for i in range(len(string)+4):
+            line += "#"
+        print(line)
+        print("# " + string + " #")
+        print(line)
+
+    def evaluate_answer(self, to_check, answer):
+        result = 0
+        if len(to_check) != len(answer):
+            result -= int(math.fabs(len(to_check) - len(answer)))
+        for char in to_check:
+            if not (char == ' ' or char == '\t' or char == '\r' or char == '\n'):
+                if char.lower() in answer.lower():
+                    result += 1
+                else:
+                    result -= 1
+        if result < 0:
+            result = 0
+        return result
+
+    def start(self):
+        root = self.tree.getroot()
+        self.beautify(root.attrib['name'].upper())
+        print()
+
+        for mcq in root:
+            print("[ " + mcq.attrib['name'] + " ]")
+            print("Questions :")
+            str_answers = "Answers : \n"
+            result = 0
+            total = 0
+            for question in mcq.findall('question'):
+                answers = ""
+                for answer in question.findall('answer'):
+                    answers += answer.text
+
+                to_check = input(question.attrib['name'] + " : ")
+                question_result = self.evaluate_answer(to_check, answers)
+                str_answers += question.attrib['name'] + " : " + answers + " (" + str(question_result) + "/" + str(len(answers)) + ")\n"
+
+                result += question_result
+                total += len(answers)
+            print(str_answers[:-1])
+            print("Result : " + str(result) + "/" + str(total) + "\n")
+
+
+class MCQCreator:
+    def __init__(self, filename):
+        self.filename = filename
+
+    def create(self):
+        root = ET.Element('test')
+
+        test_name = input("Test name : ")
+        root.attrib['name'] = test_name
+
+        mcq_number = input("Number of MCQs : ")
+
+        for mcq_i in range(int(mcq_number)):
+            print("MCQ [" + str(mcq_i+1) + "/" + mcq_number + "]")
+
+            mcq = ET.SubElement(root, 'mcq')
+            mcq_name = input("MCQ name : ")
+            mcq.attrib['name'] = mcq_name
+
+            question_number = input("Number of questions : ")
+
+            for question_i in range(int(question_number)):
+                print("Question [" + str(question_i+1) + "/" + question_number + "]")
+
+                question = ET.SubElement(mcq, 'question')
+                question_name = input("Question name : ")
+                question.attrib['name'] = question_name
+
+                answers = input("Answers : ")
+                for char in answers :
+                    if not (char == ' ' or char == '\t' or char == '\r' or char == '\n'):
+                        answer = ET.SubElement(question, 'answer')
+                        answer.text = char.upper()
+
+        pretty_xml = minidom.parseString(ET.tostring(root,
+                'utf-8')).toprettyxml(indent="\t")
+        f = open(self.filename, 'w')
+        f.write(pretty_xml)
+        print("\n" + self.filename + " succesfully created !")
 
 
 def main(argv):
-    usage = 'usage: MCQMaster.py -f <MCQ file>'
+    usage = "usage: MCQMaster.py <option>\n" + \
+        "Options :\n" + \
+        " -f <XML file> : Launch MCQMaster in test mode (read from file)\n" + \
+        " -c <XML file> : Launch MCQMaster in create mode (write to file)"
     try:
-        opts, args = getopt.getopt(argv, "hf:", ["file="])
+        opts, args = getopt.getopt(argv, "hf:c:", ["file="])
     except getopt.GetoptError:
         print(usage)
         sys.exit(2)
@@ -70,6 +117,10 @@ def main(argv):
             sys.exit()
         elif opt in ("-f", "--file"):
             m = MCQMaster(arg)
+            m.start()
+        elif opt in ("-c", "--file"):
+            m = MCQCreator(arg)
+            m.create()
 
 
 if __name__ == "__main__":
