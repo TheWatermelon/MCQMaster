@@ -31,7 +31,35 @@ class MCQMaster:
             result = 0
         return result
 
-    def start(self):
+    def start_one(self, mcq_name):
+        root = self.tree.getroot()
+        self.beautify(root.attrib['name'].upper())
+        print()
+
+        for mcq in root:
+            if mcq.attrib['name'] in mcq_name:
+                print("[ " + mcq.attrib['name'] + " ]")
+                print("Questions :")
+                str_answers = "Answers : \n"
+                result = 0
+                total = 0
+                for question in mcq.findall('question'):
+                    answers = ""
+                    for answer in question.findall('answer'):
+                        answers += answer.text
+
+                    to_check = input(question.attrib['name'] + " : ")
+                    question_result = self.evaluate_answer(to_check, answers)
+                    str_answers += question.attrib['name'] + " : " + answers + " (" + str(question_result) + "/" + str(len(answers)) + ")\n"
+
+                    result += question_result
+                    total += len(answers)
+                print(str_answers[:-1])
+                print("Result : " + str(result) + "/" + str(total) + "\n")
+                break
+
+
+    def start_all(self):
         root = self.tree.getroot()
         self.beautify(root.attrib['name'].upper())
         print()
@@ -55,6 +83,14 @@ class MCQMaster:
                 total += len(answers)
             print(str_answers[:-1])
             print("Result : " + str(result) + "/" + str(total) + "\n")
+
+    def start(self):
+        mcq_name = input("Enter the name of the MCQ you want to run (* for all) : ")
+        if mcq_name in '*':
+            self.start_all()
+        else:
+            self.start_one(mcq_name)
+        print()
 
 
 class MCQCreator:
