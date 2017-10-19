@@ -45,11 +45,10 @@ class MCQRunConsole:
             answers = question.get('answers')
             to_check = input(question.get('name') + " : ")
             question_result = self.master.evaluate_answer(to_check, answers)
-            str_answers += question.get('name') + " : " + answers + " (" + str(question_result) + "/" + str(
-                len(answers)) + ")\n"
+            str_answers += question.get('name') + " : " + answers + " (" + str(question_result) + "/1)\n"
 
             result += question_result
-            total += len(answers)
+            total += 1
         print(str_answers[:-1])
         print("Result : " + str(result) + "/" + str(total) + "\n")
 

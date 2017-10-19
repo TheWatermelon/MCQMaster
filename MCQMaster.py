@@ -4,11 +4,8 @@ import xml.dom.minidom as minidom
 
 
 class MCQMaster:
-    def __init__(self, file, good_answer=1, bad_answer=-1, void_answer=-1):
+    def __init__(self, file):
         self.tree = ET.parse(file)
-        self.good_answer = good_answer
-        self.bad_answer = bad_answer
-        self.void_answer = void_answer
 
     def get_mcq_by_element_tree(self, mcq_element):
         mcq = {}
@@ -53,21 +50,31 @@ class MCQMaster:
         return self.tree.getroot().get('name')
 
     def evaluate_answer(self, to_check, answer):
-        result = 0
+        errors = 0
         if len(to_check) < len(answer):
             # for each answer not provided
-            for i in range(int(math.fabs(len(to_check) - len(answer)))):
-                result += self.void_answer
+            for i in range(len(answer) - len(to_check)):
+                errors += 1
         for char in to_check:
             if not (char == ' ' or char == '\t' or char == '\r' or char == '\n'):
-                if char.lower() in answer.lower():
-                    result += self.good_answer
-                else:
-                    result += self.bad_answer
-        # prevent negative result
-        if result < 0:
-            result = 0
-        return result
+                if char.lower() not in answer.lower():
+                    errors += 1
+
+        # Detect whether the answer is SCQ or MCQ
+        if len(answer) > 1:
+            # MCQ
+            if errors > 1:
+                return 0
+            elif errors > 0:
+                return 0.5
+            else:
+                return 1
+        else:
+            # SCQ
+            if errors > 0:
+                return 0
+            else:
+                return 1
 
 
 class MCQCreator:
