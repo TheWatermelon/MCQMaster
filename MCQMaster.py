@@ -51,10 +51,11 @@ class MCQMaster:
 
     def evaluate_answer(self, to_check, answer):
         errors = 0
-        if len(to_check) < len(answer):
-            # for each answer not provided
-            for i in range(len(answer) - len(to_check)):
+        # How many correct answers weren't provided
+        for char in answer:
+            if char not in to_check:
                 errors += 1
+        # How many bad answers were provided
         for char in to_check:
             if not (char == ' ' or char == '\t' or char == '\r' or char == '\n'):
                 if char.lower() not in answer.lower():
@@ -62,7 +63,7 @@ class MCQMaster:
 
         # Detect whether the answer is SCQ or MCQ
         if len(answer) > 1:
-            # MCQ
+            # MCQ : 0 error = 1; 1 error = 0.5; 2+ errors = 0
             if errors > 1:
                 return 0
             elif errors > 0:
@@ -70,7 +71,7 @@ class MCQMaster:
             else:
                 return 1
         else:
-            # SCQ
+            # SCQ : 0 error = 1; 1+ error(s) = 0
             if errors > 0:
                 return 0
             else:
