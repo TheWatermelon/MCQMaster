@@ -53,7 +53,7 @@ class MCQMaster:
         errors = 0
         # How many correct answers weren't provided
         for char in answer:
-            if char not in to_check:
+            if char.lower() not in to_check.lower():
                 errors += 1
         # How many bad answers were provided
         for char in to_check:
