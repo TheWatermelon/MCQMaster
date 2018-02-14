@@ -70,7 +70,9 @@ class MCQCreateConsole:
 
     def create(self):
         test_name = input("Test name : ")
-        self.tree.attrib['name'] = test_name
+        data = {}
+        data['name'] = test_name
+        data['mcqs'] = []
 
         mcq_number = 0
         while True:
@@ -83,11 +85,12 @@ class MCQCreateConsole:
                 break
 
         for mcq_i in range(mcq_number):
+            new_mcq = {}
+
             print("MCQ [" + str(mcq_i + 1) + "/" + str(mcq_number) + "]")
 
-            mcq = ET.SubElement(self.tree, 'mcq')
             mcq_name = input("MCQ name : ")
-            mcq.attrib['name'] = mcq_name
+            new_mcq['name'] = mcq_name
 
             question_number = 0
             while True:
@@ -99,24 +102,24 @@ class MCQCreateConsole:
                 else:
                     break
 
+            new_mcq['questions'] = []
+
             for question_i in range(question_number):
                 print("Question [" + str(question_i + 1) + "/" + str(question_number) + "]")
 
-                question = ET.SubElement(mcq, 'question')
                 question_name = input("Question name : ")
-                question.attrib['name'] = question_name
 
                 answers = input("Answers : ")
+                upper_answers = ""
                 for char in answers:
                     if not (char == ' ' or char == '\t' or char == '\r' or char == '\n'):
-                        answer = ET.SubElement(question, 'answer')
-                        answer.text = char.upper()
+                        upper_answers = upper_answers + char.upper()
+                new_mcq['questions'].append((question_name, upper_answers))
 
-            self.creator.create()
-            print("\n" + self.filename + " succesfully created !")
+            data['mcqs'].append(new_mcq)
 
-    def get_tree(self):
-        return self.tree
+        self.creator.create_from_dict(data)
+        print("\n" + self.filename + " succesfully created !")
 
 
 def main(argv):

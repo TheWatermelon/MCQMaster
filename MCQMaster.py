@@ -83,7 +83,25 @@ class MCQCreator:
         self.filename = filename
         self.tree = tree
 
-    def create(self):
+    def create_from_dict(self, d):
+        print(d)
+        self.tree.attrib['name'] = d['name']
+
+        for mcq_i in range(len(d['mcqs'])):
+            mcq = ET.SubElement(self.tree, 'mcq')
+            mcq.attrib['name'] = d['mcqs'][mcq_i]['name']
+
+            questions = d['mcqs'][mcq_i]['questions']
+            for question_i in range(len(questions)):
+                question = ET.SubElement(mcq, 'question')
+                question.attrib['name'] = questions[question_i][0]
+                for char in questions[question_i][1]:
+                    answer = ET.SubElement(question, 'answer')
+                    answer.text = char.upper()
+
+        self.print_on_file()
+
+    def print_on_file(self):
         pretty_xml = minidom.parseString(ET.tostring(self.tree,
                                                      'utf-8')).toprettyxml(indent="\t")
         f = open(self.filename, 'w')
