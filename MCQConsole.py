@@ -65,6 +65,58 @@ class MCQRunConsole:
 class MCQCreateConsole:
     def __init__(self, filename):
         self.filename = filename
+        self.tree = ET.Element('test')
+        self.creator = MCQCreator(self.filename, self.tree)
+
+    def create(self):
+        test_name = input("Test name : ")
+        self.tree.attrib['name'] = test_name
+
+        mcq_number = 0
+        while True:
+            try:
+                mcq_number = int(input("Number of MCQs : "))
+            except ValueError:
+                print("Enter an integer !")
+                continue
+            else:
+                break
+
+        for mcq_i in range(mcq_number):
+            print("MCQ [" + str(mcq_i + 1) + "/" + str(mcq_number) + "]")
+
+            mcq = ET.SubElement(self.tree, 'mcq')
+            mcq_name = input("MCQ name : ")
+            mcq.attrib['name'] = mcq_name
+
+            question_number = 0
+            while True:
+                try:
+                    question_number = int(input("Number of questions : "))
+                except ValueError:
+                    print("Enter an integer !")
+                    continue
+                else:
+                    break
+
+            for question_i in range(question_number):
+                print("Question [" + str(question_i + 1) + "/" + str(question_number) + "]")
+
+                question = ET.SubElement(mcq, 'question')
+                question_name = input("Question name : ")
+                question.attrib['name'] = question_name
+
+                answers = input("Answers : ")
+                for char in answers:
+                    if not (char == ' ' or char == '\t' or char == '\r' or char == '\n'):
+                        answer = ET.SubElement(question, 'answer')
+                        answer.text = char.upper()
+
+            self.creator.create()
+            print("\n" + self.filename + " succesfully created !")
+
+    def get_tree(self):
+        return self.tree
 
 
 def main(argv):
@@ -87,7 +139,7 @@ def main(argv):
         elif opt in ("-f", "--file"):
             m = MCQRunConsole(arg)
         elif opt in ("-c", "--file"):
-            m = MCQCreator(arg)
+            m = MCQCreateConsole(arg)
             m.create()
 
 
