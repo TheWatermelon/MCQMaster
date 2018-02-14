@@ -84,7 +84,6 @@ class MCQCreator:
         self.tree = tree
 
     def create_from_dict(self, d):
-        print(d)
         self.tree.attrib['name'] = d['name']
 
         for mcq_i in range(len(d['mcqs'])):

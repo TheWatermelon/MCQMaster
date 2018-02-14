@@ -87,7 +87,7 @@ class MCQCreateConsole:
         for mcq_i in range(mcq_number):
             new_mcq = {}
 
-            print("MCQ [" + str(mcq_i + 1) + "/" + str(mcq_number) + "]")
+            print("\nMCQ [" + str(mcq_i + 1) + "/" + str(mcq_number) + "]")
 
             mcq_name = input("MCQ name : ")
             new_mcq['name'] = mcq_name
