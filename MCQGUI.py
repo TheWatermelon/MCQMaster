@@ -1,7 +1,8 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 from MCQMaster import *
-
+import os
 
 class MCQRunGUI(Tk):
     def __init__(self, *args, **kwargs):
@@ -31,6 +32,14 @@ class MCQRunGUI(Tk):
     def set_MCQMaster(self, mcq_master):
         self.master = mcq_master
 
+    def run_tests(self, cb_list):
+        for cb in cb_list:
+            if cb.instate(['selected']):
+                # create a test view for the selected test and add it to the frames
+                print(cb.cget("text"))
+
+        # goto the first test selected to start 
+
 
 class MainMenu(Frame):
     def __init__(self, parent, controller):
@@ -43,7 +52,7 @@ class MainMenu(Frame):
         Button(self, text="Quit", command=quit).pack(side="top")
 
     def loadFileCallBack(self):
-        filename = askopenfilename()
+        filename = askopenfilename(initialdir=(os.path.expanduser('~/')))
         self.controller.set_MCQMaster(MCQMaster(filename))
         frame = MCQExam(parent=self.controller.container, controller=self.controller)
         frame.grid(row=0, column=0, sticky="nsew")
@@ -67,26 +76,26 @@ class MCQExam(Frame):
         self.test_name_label['text'] = master.get_test_name()
         frame = Frame(self)
         frame.pack(side="top")
+        
+        mcqs_frame = Frame(frame)
+        mcqs_frame.pack(side="top")
+        Label(mcqs_frame, text="Choose the MCQs you want").pack(side="top")
+        cb_list = []
         for mcq_i in master.get_all_mcqs():
-            Label(frame, text=mcq_i.get('name')).pack(side="top")
+            cb = ttk.Checkbutton(mcqs_frame, text=mcq_i.get('name'))
+            cb.pack(side="left")
+            cb_list.append(cb)
 
-            for question_i in mcq_i.get('questions'):
-                question_frame = Frame(frame)
-                question_frame.pack(side="top")
-                Label(question_frame, text=question_i.get('name')).pack(side="left")
-                CA = Checkbutton(question_frame, text="A", variable=IntVar)
-                CA.pack(side="left")
-                CB = Checkbutton(question_frame, text="B", variable=IntVar)
-                CB.pack(side="left")
-                CC = Checkbutton(question_frame, text="C", variable=IntVar)
-                CC.pack(side="left")
-                CD = Checkbutton(question_frame, text="D", variable=IntVar)
-                CD.pack(side="left")
-                CE = Checkbutton(question_frame, text="E", variable=IntVar)
-                CE.pack(side="left")
-
+        Button(mcqs_frame, text="Run test(s)", command=lambda: self.controller.run_tests(cb_list)).pack(side="bottom")
 
         return self
+
+
+class MCQTest(Frame):
+    def __init__(self, parent, controller, mcq_name):
+        Frame.__init__(self, parent)
+        self.controller = controller
+        self.mcq = controller.master.get_mcq_by_name(mcq_name)
 
 
 class MCQCreate1(Frame):

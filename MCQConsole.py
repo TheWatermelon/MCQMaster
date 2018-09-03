@@ -17,15 +17,18 @@ class MCQRunConsole:
             list_mcqs.append(mcq_i.get('name'))
         print(str_mcqs, list_mcqs, '\n')
         # Prompt to choose a MCQ (or all of them)
-        mcq_choice = input("Enter the MCQ (only one) you want, or '*' for all : ")
+        mcq_choice_raw = input("Enter the MCQ(s) you want (MCQ1[,MCQ2,...]), or '*' for all : ")
+        mcq_choice_short = mcq_choice_raw.replace(' ','')
+        mcq_choice = mcq_choice_short.rsplit(',')
         print()
         # Start the corresponding exam
-        if mcq_choice in '*':
+        if mcq_choice[0] in '*':
             self.start_all()
         else:
-            for mcq_name in list_mcqs:
-                if mcq_choice in mcq_name:
-                    self.start_one_by_mcq_name(mcq_name)
+            for mcq_choice_i in mcq_choice:
+                for mcq_name in list_mcqs:
+                    if mcq_choice_i in mcq_name:
+                        self.start_one_by_mcq_name(mcq_name)
 
     def beautify(self, string):
         line = ""
