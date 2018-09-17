@@ -5,7 +5,8 @@ import xml.dom.minidom as minidom
 
 class MCQMaster:
     def __init__(self, file):
-        self.tree = ET.parse(file)
+        with open(file, 'r', encoding = "ISO-8859-1") as xml_file:
+            self.tree = ET.parse(xml_file)
 
     def get_mcq_by_element_tree(self, mcq_element):
         mcq = {}
