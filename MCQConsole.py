@@ -48,7 +48,7 @@ class MCQRunConsole:
         total = 0
         result = 0
         print("[ " + mcq_object.get('name') + " ]")
-        print("Questions :")
+        print(str(len(mcq_object.get('questions'))) + " Questions :")
         str_answers = "Answers :\n"
         for question in mcq_object.get('questions'):
             answers = question.get('answers')
